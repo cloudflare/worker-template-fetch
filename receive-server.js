@@ -1,53 +1,71 @@
-/**
- *
- * @param {RequestInfo} request the request/url of which to fetch a JSON body from
- * @param {RequestInit=} init optional options to add to the request
- */
-async function fetchJson(request, init = {}) {
-  try {
-    const response = await fetch(request, init)
-    const body = await response.json()
-    return body
-  } catch (error) {
-    return { error }
-  }
+const someHTML = `
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Hello World</h1>
+<p>This is all generated using a Worker</p>
+<iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+></iframe>
+
+</body>
+</html>
+`
+const someJSON = {
+  result: ['some', 'results'],
+  errors: null,
+  msg: 'this is some random json',
 }
 
 /**
- * sendForm sends a form with form pass in
- * @param {FormData} form
+ * rawHtmlResponse delievers a response with HTML inputted directly
+ * into the worker script
+ * @param {string} html
  */
-const sendForm = async function(form) {
-  let init: RequestInit = { headers: { 'content-type': 'multipart/form-data' } }
-  let response: Response = {
-    body,
-    init,
+async function rawHtmlResponse(html) {
+  const init = {
+    headers: {
+      'content-type': 'text/html;charset=UTF-8',
+    },
   }
-  try {
-    return new Response(response)
-  } catch (err) {
-    return new Response('could not handle the data passede in')
-  }
+
+  return new Response(html, init)
 }
+
+/**
+ * rawJsonResponse delievers a response with a Json Object inputted directly
+ * into the worker script
+ * @param {Object} json
+ */
+async function rawJsonResponse(json) {
+  const init = {
+    headers: {
+      'content-type': 'application/json;charset=UTF-8',
+    },
+  }
+
+  return new Response(json, init)
+}
+
+//TODO add simple make subrequest
+
+/**
+ * TODO changeto use KV will need mime types https://www.npmjs.com/package/mime-types
+ */
 
 addEventListener('fetch', event => {
-  const { request, respondWith } = event
-  const { url } = request
-  // Replace with the routes you wish to serve static resources from
-  if (url.includes('/fetch')) return respondWith(fetchJson(request))
-  if (url.endsWith('/form')) {
-    let body = new FormData()
-    let file = new File('file data...', 'filename.txt')
-    body.append('username', 'abc123')
-    body.append('avatar', file)
-    return respondWith(sendForm(body))
+  const { url } = event.request
+
+  if (url.endsWith('/html')) {
+    return event.respondWith(rawHtmlResponse(someHTML))
   }
-  if (url.endsWith('/send-json')) return respondWith(readInPostJsonData(request))
-  else {
-    event.respondWith(
-      new Response(JSON.stringify({ 'from json-found': 'asd' }), {
-        headers: { 'content-type': 'application/json' },
-      })
-    )
+  if (url.endsWith('/json')) {
+    return event.respondWith(rawJsonResponse(someJSON))
   }
 })
