@@ -52,15 +52,15 @@ async function postJson(url, body = {}) {
 
   const response = await fetch(url, init)
   const respBody = await gatherResponse(response)
-  return new Response(respBody)
+  return respBody
 }
 
 /**
- * readHTML sends a GET request expecting html
- * Use await readHTML(..) in an async function to get the HTML
+ * fetchHTML sends a GET request expecting html
+ * Use await fetchHTML(..) in an async function to get the HTML
  * @param {string} url the URL to send the request to
  */
-async function readHTML(url) {
+async function fetchHTML(url) {
   const init = {
     method: 'Get',
     headers: {
@@ -70,17 +70,49 @@ async function readHTML(url) {
 
   const response = await fetch(url)
   const respBody = await gatherResponse(response)
-  return new Response(respBody, init)
+  return respBody
 }
 
-addEventListener('fetch', event => {
-  const { url } = event.request
+/**
+ * readJSON reads in the request  body expecting JSON
+ * Use await readJSON(..) in an async function to get the JSON
+ * @param {Request} req the URL to send the request to
+ */
+async function readJSON(req) {
+  const reqBody = await req.json()
+  return JSON.stringify(reqBody)
+}
 
+addEventListener('fetch', async event => {
+  const { url, method } = event.request
+
+  // Set respBody and init according to the route
+  // and method of the incoming request
   if (url.endsWith('/html')) {
-    return event.respondWith(readHTML(someHTMLURL))
+    init = {
+      headers: {
+        'content-type': 'text/html;charset=UTF-8',
+      },
+    }
+    respBody = fetchHTML(someHTMLURL)
   }
 
   if (url.endsWith('/json')) {
-    return event.respondWith(postJson(someURL, someJSON))
+    init = {
+      headers: {
+        'content-type': 'application/json;charset=UTF-8',
+      },
+    }
+    if (method === 'GET') respBody = postJson(someURL, someJSON)
+    if (method === 'POST') respBody = readJSON(event.request)
   }
+
+  // Turn the the respBody string into a Response
+  // return this response to the requester
+  event.respondWith(
+    (async function() {
+      const body = await respBody
+      return new Response(body, init)
+    })()
+  )
 })
