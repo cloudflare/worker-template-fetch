@@ -12,7 +12,7 @@ const someJSON = {
 
 /**
  * gatherResponse awaits and returns a response body as a string.
- * Use await postJson(..) in an async function to get the response body
+ * Use await gatherResponse(..) in an async function to get the response body
  * @param {Response} response to
  */
 async function gatherResponse(response) {
@@ -35,13 +35,37 @@ async function gatherResponse(response) {
 }
 
 /**
- * postJson sends a POST request with data in JSON and
- * and reads in the response body. Use await postJson(..)
+ * readRequestBody reads in the incoming request body
+ * Use await readRequestBody(..) in an async function to get the string
+ * @param {Request} request the incoming request to read from
+ */
+async function readRequestBody(request) {
+  const { headers } = request
+  const contentType = headers.get('content-type')
+
+  if (contentType.includes('application/json')) {
+    const body = await request.json()
+    return JSON.stringify(body)
+  } else if (contentType.includes('application/text')) {
+    const body = await request.text()
+    return body
+  } else if (contentType.includes('text/html')) {
+    const body = await request.text()
+    return body
+  } else {
+    const body = await request.body()
+    return body
+  }
+}
+
+/**
+ * fetchPostJson sends a POST request with data in JSON and
+ * and reads in the response body. Use await fetchPostJson(..)
  * in an async function to get the response body
  * @param {string} url the URL to send the request to
  * @param {BodyInit} body the JSON data to send in the request
  */
-async function postJson(url, body = {}) {
+async function fetchPostJson(url, body = {}) {
   const init = {
     body,
     method: 'POST',
@@ -56,11 +80,11 @@ async function postJson(url, body = {}) {
 }
 
 /**
- * fetchHTML sends a GET request expecting html
- * Use await fetchHTML(..) in an async function to get the HTML
+ * fetchGetHtml sends a GET request expecting html
+ * Use await fetchGetHtml(..) in an async function to get the HTML
  * @param {string} url the URL to send the request to
  */
-async function fetchHTML(url) {
+async function fetchGetHtml(url) {
   const init = {
     method: 'Get',
     headers: {
@@ -74,14 +98,26 @@ async function fetchHTML(url) {
 }
 
 /**
- * readJSON reads in the request  body expecting JSON
- * Use await readJSON(..) in an async function to get the JSON
- * @param {Request} req the URL to send the request to
+ * fetchGetHtml sends a GET request expecting html
+ * Use await fetchGetHtml(..) in an async function to get the HTML
+ * @param {string} url the URL to send the request to
  */
-async function readJSON(req) {
-  const reqBody = await req.json()
-  return JSON.stringify(reqBody)
+async function fetchGetHtml(url) {
+  const init = {
+    method: 'Get',
+    headers: {
+      'content-type': 'text/html;charset=UTF-8',
+    },
+  }
+
+  const response = await fetch(url)
+  const respBody = await gatherResponse(response)
+  return respBody
 }
+
+/**
+ * Example of how fetch methods above can be used in an application
+ *  */
 
 addEventListener('fetch', async event => {
   const { url, method } = event.request
@@ -94,7 +130,7 @@ addEventListener('fetch', async event => {
         'content-type': 'text/html;charset=UTF-8',
       },
     }
-    respBody = fetchHTML(someHTMLURL)
+    respBody = fetchGetHtml(someHTMLURL)
   }
 
   if (url.endsWith('/json')) {
@@ -103,8 +139,8 @@ addEventListener('fetch', async event => {
         'content-type': 'application/json;charset=UTF-8',
       },
     }
-    if (method === 'GET') respBody = postJson(someURL, someJSON)
-    if (method === 'POST') respBody = readJSON(event.request)
+    if (method === 'GET') respBody = fetchPostJson(someURL, someJSON)
+    if (method === 'POST') respBody = readRequestBody(event.request)
   }
 
   // Turn the the respBody string into a Response
