@@ -1,9 +1,9 @@
 /**
  * Example someHost is set up to respond with JSON and HTML according to the path
  *  */
-const someHost = 'http://victoriacf.tk' //"http://workers-tooling.cf/fake-origin"
-const someJSONURL = someHost + '/json'
-const someHTMLURL = someHost + '/html'
+const someHost = 'http://victoriacf.tk/demos' //equivalent to what runs on workers-tooling.cf/demos
+const someJSONURL = someHost + '/requests/json'
+const someHTMLURL = someHost + '/static/html'
 const someJSONToSend = {
   results: ['default data to send'],
   errors: null,
