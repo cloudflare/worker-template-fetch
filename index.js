@@ -1,13 +1,18 @@
 /**
  * Example someHost is set up to respond with JSON and HTML according to the path
  *  */
-const someHost = 'http://victoriacf.tk/' //"http://workers-tooling.cf/fake-origin"
-const someURL = someHost + '/json'
+const someHost = 'http://victoriacf.tk' //"http://workers-tooling.cf/fake-origin"
+const someJSONURL = someHost + '/json'
 const someHTMLURL = someHost + '/html'
-const someJSON = {
-  result: ['some', 'results'],
+const someJSONToSend = {
+  results: ['default data to send'],
   errors: null,
-  msg: 'this is some random json',
+  msg: 'I sent this to the fetch',
+}
+const someDefaultJSONToRespond = {
+  results: ['default result'],
+  errors: null,
+  msg: 'success in sending a POST',
 }
 
 /**
@@ -29,7 +34,7 @@ async function gatherResponse(response) {
     const body = await response.text()
     return body
   } else {
-    const body = await response.body()
+    const body = await response.text()
     return body
   }
 }
@@ -43,7 +48,7 @@ async function gatherResponse(response) {
  */
 async function fetchPostJson(url, body = {}) {
   const init = {
-    body,
+    body: JSON.stringify(body),
     method: 'POST',
     headers: {
       'content-type': 'application/json;charset=UTF-8',
@@ -51,8 +56,9 @@ async function fetchPostJson(url, body = {}) {
   }
 
   const response = await fetch(url, init)
-  const respBody = await gatherResponse(response)
-  return respBody
+  const results = await gatherResponse(response)
+  const retBody = Object.assign(someDefaultJSONToRespond, { results })
+  return JSON.stringify(retBody)
 }
 
 /**
@@ -97,7 +103,7 @@ addEventListener('fetch', async event => {
         'content-type': 'application/json;charset=UTF-8',
       },
     }
-    respBody = fetchPostJson(someURL, someJSON)
+    respBody = fetchPostJson(someJSONURL, someJSONToSend)
   }
 
   // Turn the the respBody string into a Response
