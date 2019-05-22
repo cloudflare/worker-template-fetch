@@ -1,5 +1,5 @@
 /**
- * Example Input
+ * Example someHost is set up to respond with JSON and HTML according to the path
  *  */
 const someHost = 'http://victoriacf.tk/' //"http://workers-tooling.cf/fake-origin"
 const someURL = someHost + '/json'
@@ -35,30 +35,6 @@ async function gatherResponse(response) {
 }
 
 /**
- * readRequestBody reads in the incoming request body
- * Use await readRequestBody(..) in an async function to get the string
- * @param {Request} request the incoming request to read from
- */
-async function readRequestBody(request) {
-  const { headers } = request
-  const contentType = headers.get('content-type')
-
-  if (contentType.includes('application/json')) {
-    const body = await request.json()
-    return JSON.stringify(body)
-  } else if (contentType.includes('application/text')) {
-    const body = await request.text()
-    return body
-  } else if (contentType.includes('text/html')) {
-    const body = await request.text()
-    return body
-  } else {
-    const body = await request.body()
-    return body
-  }
-}
-
-/**
  * fetchPostJson sends a POST request with data in JSON and
  * and reads in the response body. Use await fetchPostJson(..)
  * in an async function to get the response body
@@ -75,24 +51,6 @@ async function fetchPostJson(url, body = {}) {
   }
 
   const response = await fetch(url, init)
-  const respBody = await gatherResponse(response)
-  return respBody
-}
-
-/**
- * fetchGetHtml sends a GET request expecting html
- * Use await fetchGetHtml(..) in an async function to get the HTML
- * @param {string} url the URL to send the request to
- */
-async function fetchGetHtml(url) {
-  const init = {
-    method: 'Get',
-    headers: {
-      'content-type': 'text/html;charset=UTF-8',
-    },
-  }
-
-  const response = await fetch(url)
   const respBody = await gatherResponse(response)
   return respBody
 }
@@ -139,8 +97,7 @@ addEventListener('fetch', async event => {
         'content-type': 'application/json;charset=UTF-8',
       },
     }
-    if (method === 'GET') respBody = fetchPostJson(someURL, someJSON)
-    if (method === 'POST') respBody = readRequestBody(event.request)
+    respBody = fetchPostJson(someURL, someJSON)
   }
 
   // Turn the the respBody string into a Response
