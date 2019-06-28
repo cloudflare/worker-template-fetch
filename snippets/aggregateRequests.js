@@ -3,15 +3,10 @@ import gatherResponse from './lib/gatherResponse'
 /**
  * Example someHost is set up to take in a JSON request
  * @param {string} url the URL to send the request to
- * @param {BodyInit} body the JSON data to send in the request
  */
 const someHost = 'https://workers-tooling.cf/demos'
 const url = someHost + '/requests/json'
-const body = {
-    results: ['default data to send'],
-    errors: null,
-    msg: 'I sent this to the fetch',
-}
+const type = 'application/json;charset=UTF-8'
 
 /**
  * handleRequest sends a POST request with JSON data and
@@ -20,14 +15,18 @@ const body = {
  */
 export async function handleRequest(request) {
     const init = {
-        body: JSON.stringify(body),
-        method: 'POST',
         headers: {
-            'content-type': 'application/json;charset=UTF-8',
+            'content-type': type,
         },
     }
 
-    const response = await fetch(url, init)
-    const results = await gatherResponse(response)
+    const response1 = fetch(url, init)
+    const response2 = fetch(url, init)
+    const responses = await Promise.all([response1, response2])
+
+    const result1 = gatherResponse(responses[0])
+    const result2 = gatherResponse(responses[1])
+    const results = await Promise.all([result1, result2])
+
     return new Response(results, init)
 }
