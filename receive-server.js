@@ -18,9 +18,9 @@ const someHTML = `
 </html>
 `
 const someJSON = {
-  result: ['some', 'results'],
-  errors: null,
-  msg: 'this is some random json',
+    result: ['some', 'results'],
+    errors: null,
+    msg: 'this is some random json',
 }
 
 /**
@@ -29,13 +29,13 @@ const someJSON = {
  * @param {string} html
  */
 async function rawHtmlResponse(html) {
-  const init = {
-    headers: {
-      'content-type': 'text/html;charset=UTF-8',
-    },
-  }
+    const init = {
+        headers: {
+            'content-type': 'text/html;charset=UTF-8',
+        },
+    }
 
-  return new Response(html, init)
+    return new Response(html, init)
 }
 
 /**
@@ -44,13 +44,13 @@ async function rawHtmlResponse(html) {
  * @param {Object} json
  */
 async function rawJsonResponse(json) {
-  const init = {
-    headers: {
-      'content-type': 'application/json;charset=UTF-8',
-    },
-  }
+    const init = {
+        headers: {
+            'content-type': 'application/json;charset=UTF-8',
+        },
+    }
 
-  return new Response(json, init)
+    return new Response(json, init)
 }
 
 //TODO add simple make subrequest
@@ -60,12 +60,12 @@ async function rawJsonResponse(json) {
  */
 
 addEventListener('fetch', event => {
-  const { url } = event.request
+    const { url } = event.request
 
-  if (url.endsWith('/html')) {
-    return event.respondWith(rawHtmlResponse(someHTML))
-  }
-  if (url.endsWith('/json')) {
-    return event.respondWith(rawJsonResponse(someJSON))
-  }
+    if (url.endsWith('/html')) {
+        return event.respondWith(rawHtmlResponse(someHTML))
+    }
+    if (url.endsWith('/json')) {
+        return event.respondWith(rawJsonResponse(someJSON))
+    }
 })

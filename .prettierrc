@@ -1,6 +1,7 @@
 {
-  trailingComma: 'es5',
-  tabWidth: 4,
-  semi: false,
-  singleQuote: true,
-};
+  "singleQuote": true,
+  "semi": false,
+  "trailingComma": "es5",
+  "tabWidth": 4,
+  "printWidth": 100
+}
