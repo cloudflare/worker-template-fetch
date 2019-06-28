@@ -7,9 +7,9 @@ import gatherResponse from './lib/gatherResponse'
 const someHost = 'https://workers-tooling.cf/demos'
 const url = someHost + '/requests/json'
 const body = {
-  results: ['default data to send'],
-  errors: null,
-  msg: 'I sent this to the fetch',
+    results: ['default data to send'],
+    errors: null,
+    msg: 'I sent this to the fetch',
 }
 
 /**
@@ -18,16 +18,15 @@ const body = {
  * @param {Request} request the incoming request
  */
 export async function handleRequest(request) {
-  const init = {
-    body: JSON.stringify(body),
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json;charset=UTF-8',
-    },
-  }
-  console.log('in post jsonasda')
+    const init = {
+        body: JSON.stringify(body),
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json;charset=UTF-8',
+        },
+    }
 
-  const response = await fetch(url, init)
-  const results = await gatherResponse(response)
-  return new Response(results, init)
+    const response = await fetch(url, init)
+    const results = await gatherResponse(response)
+    return new Response(results, init)
 }

@@ -13,13 +13,12 @@ const url = someHost + '/static/html'
  * @param {Request} request the incoming request
  */
 export async function handleRequest(request) {
-  const init = {
-    headers: {
-      'content-type': 'text/html;charset=UTF-8',
-    },
-  }
-  console.log('asfetchd')
-  const response = await fetch(url, init)
-  const results = await gatherResponse(response)
-  return new Response(results, init)
+    const init = {
+        headers: {
+            'content-type': 'text/html;charset=UTF-8',
+        },
+    }
+    const response = await fetch(url, init)
+    const results = await gatherResponse(response)
+    return new Response(results, init)
 }
