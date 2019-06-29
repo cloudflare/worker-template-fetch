@@ -3,3 +3,4 @@ worker/*
 *.lock
 wrangler.toml
 .vscode*
+receiveserver.js
