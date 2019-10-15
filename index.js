@@ -85,7 +85,7 @@ async function fetchGetHtml(url) {
 
 addEventListener('fetch', async event => {
   const { url, method } = event.request
-
+  let init, respBody;
   // Set respBody and init according to the route
   // and method of the incoming request
   if (url.endsWith('/html')) {
